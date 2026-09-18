@@ -1,15 +1,45 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
-export function requireAuth(req, res, next) {
+/**
+ * Verifies the token, then confirms the account behind it is still allowed in.
+ *
+ * The signature alone is not enough: a token is valid for eight hours, so a
+ * member of staff who is demoted or deactivated would otherwise keep the access
+ * they had when they signed in. Role and active status are therefore read from
+ * the record on every request, and the token is treated as nothing more than a
+ * claim about which record to read.
+ */
+export async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorised' });
   }
+
+  let payload;
   try {
-    req.user = jwt.verify(header.slice(7), process.env.JWT_SECRET);
-    next();
+    payload = jwt.verify(header.slice(7), process.env.JWT_SECRET);
   } catch {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+
+  try {
+    const user = await User.findById(payload.id).select('name email role active');
+
+    // Deleted or deactivated reads the same as never signed in.
+    if (!user || !user.active) {
+      return res.status(401).json({ error: 'Unauthorised' });
+    }
+
+    req.user = {
+      id: String(user._id),
+      name: user.name || user.email,
+      email: user.email,
+      role: user.role,
+    };
+    next();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
 

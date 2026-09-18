@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth, requireRole, canSeeEnquiries } from '../middleware/authMiddleware.js';
+import { enquiryLimiter } from '../middleware/rateLimit.js';
 import {
   createEnquiry,
   getEnquiries,
@@ -10,8 +11,8 @@ import {
 
 const router = Router();
 
-// Public
-router.post('/', createEnquiry);
+// Public, and therefore rate limited: this route sends email.
+router.post('/', enquiryLimiter, createEnquiry);
 
 // Admissions data is office business: teachers are signed in but must not see
 // parents' enquiries, so every route below is role-checked as well as authed.

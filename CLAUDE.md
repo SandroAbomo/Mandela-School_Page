@@ -78,6 +78,8 @@ Requires a running MongoDB instance (local or Atlas).
 | `PORT`                 | API port (default 5000)                            |
 | `MONGO_URI`            | MongoDB connection string                          |
 | `JWT_SECRET`           | Secret used to sign admin JWTs                     |
+| `CORS_ORIGIN`          | Comma-separated origins allowed to call the API    |
+| `TRUST_PROXY`          | Reverse proxy hops; leave unset when run directly  |
 | `SCHOOL_NAME`          | Name used in outgoing email from-address/signature |
 | `EMAIL_HOST`           | SMTP host                                          |
 | `EMAIL_PORT`           | SMTP port                                          |
@@ -102,7 +104,7 @@ Requires a running MongoDB instance (local or Atlas).
 | Database         | MongoDB + Mongoose 8                    |
 | Auth             | JWT (`jsonwebtoken`) + bcryptjs         |
 | Email            | Nodemailer                              |
-| Hardening        | helmet, cors, morgan                    |
+| Hardening        | helmet, cors allow-list, express-rate-limit, morgan |
 
 ## Design System
 
@@ -262,6 +264,15 @@ navigation to match.
   controller, so an unfinished article cannot reach parents even via a direct API call.
 - **Roles are enforced on the server, not in the browser.** `requireRole` guards every
   write and every admissions route; the sidebar only hides doors that are already locked.
+- **The token names the user; the record decides what they may do.** `requireAuth` reloads
+  the account on every request and reads `role` and `active` from it, so demoting or
+  deactivating a member of staff takes effect on their next request rather than whenever
+  their eight-hour token happens to expire.
+- **The two endpoints open to the internet are throttled.** `POST /api/enquiries` sends
+  mail, so an unthrottled loop would be a spam run through the school's SMTP account;
+  `POST /api/auth/login` counts only failures, so a busy office cannot lock itself out.
+- **CORS is an allow-list, not a reflection.** A bare `cors()` echoes any `Origin`, which
+  would let any site make authenticated calls from a signed-in member of staff's browser.
 - **Data loading goes through `useAsyncData`**, which never calls setState synchronously
   inside an effect and discards results that arrive after the inputs changed.
 

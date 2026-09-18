@@ -20,7 +20,7 @@ Admin panel  ◄──GET  /api/enquiries──────────┘
 | Database  | MongoDB + Mongoose 8                                     |
 | Auth      | JWT (`jsonwebtoken`) + bcryptjs                          |
 | Email     | Nodemailer                                               |
-| Hardening | helmet, cors, morgan                                     |
+| Hardening | helmet, cors (allow-list), express-rate-limit, morgan    |
 
 The public site and the admin panel are one Vite app: public pages render inside a shared
 `Navbar`/`Footer` layout, and `/admin/*` routes sit behind a `ProtectedRoute` guard.
@@ -80,6 +80,8 @@ Requires a running MongoDB instance (local or Atlas).
 | `PORT`                | API port (default `5000`)                            |
 | `MONGO_URI`           | MongoDB connection string                            |
 | `JWT_SECRET`          | Secret used to sign admin JWTs                       |
+| `CORS_ORIGIN`         | Comma-separated origins allowed to call the API      |
+| `TRUST_PROXY`         | Reverse proxies in front of the app; unset when direct|
 | `SCHOOL_NAME`         | Name used in the from-address and signature of email |
 | `EMAIL_HOST`          | SMTP host                                            |
 | `EMAIL_PORT`          | SMTP port                                            |
