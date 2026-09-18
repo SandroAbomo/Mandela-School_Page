@@ -6,7 +6,7 @@ export default {
       colors: {
         primary: {
           DEFAULT: "#0F2D5C",
-          dark: "#ffffff",
+          dark: "#0A1F42",
           50: "#EBF1F4",
         },
         school: {

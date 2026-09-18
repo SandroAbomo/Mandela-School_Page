@@ -25,9 +25,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  // Navigating closes the mobile menu. This is done on the click itself rather
+  // than in an effect watching the pathname, so choosing the page you are
+  // already on still closes the menu.
+  const closeMenu = () => setMenuOpen(false);
 
   const isActive = (to) =>
     to === "/" ? pathname === "/" : pathname.startsWith(to);
@@ -128,6 +129,7 @@ export default function Navbar() {
               <Link
                 key={to}
                 to={to}
+                onClick={closeMenu}
                 className={`px-4 py-3 text-sm font-medium transition-colors rounded-md ${
                   isActive(to)
                     ? "bg-white/15 text-white"
@@ -140,6 +142,7 @@ export default function Navbar() {
             <div className="pt-3 mt-1 border-t border-white/10">
               <Link
                 to="/admissions"
+                onClick={closeMenu}
                 className="block w-full text-center px-5 py-3 bg-accent text-white font-semibold hover:bg-amber-500 transition-colors text-sm uppercase tracking-wide rounded-lg"
               >
                 Apply Now

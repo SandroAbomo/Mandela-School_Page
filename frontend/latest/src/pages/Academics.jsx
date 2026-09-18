@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import PageHero from '../components/PageHero';
 
 const STAGES = [
   { label: 'Stage 1', level: 'Early Years Foundation', ages: 'Ages 3–5', classes: 'Nursery & Reception', desc: 'Our Early Years programme is built around joyful learning. Children explore and develop through planned play, storytelling, music, and movement. Literacy and numeracy foundations are introduced naturally within rich, stimulating environments.', subjects: ['Literacy & Phonics', 'Early Numeracy', 'Creative Arts', 'Physical Education', 'Personal & Social Development', 'Understanding the World'] },
   { label: 'Stage 2', level: 'Lower Primary', ages: 'Ages 6–8', classes: 'Year 1 – Year 3', desc: 'Lower Primary introduces structured academic learning through inquiry-based teaching. Children are encouraged to ask questions and develop reading, writing, and mathematical fluency. Cultural Studies begins here, weaving African history and identity into everyday learning.', subjects: ['English Language & Literacy', 'Mathematics', 'Science & Discovery', 'Cultural Studies', 'French (Introductory)', 'Art & Design', 'Physical Education'] },
-  { label: 'Stage 3', level: 'Upper Primary', ages: 'Ages 9–12', classes: 'Year 4 – Year 7', desc: 'Upper Primary deepens academic rigour and prepares students for secondary school with confidence. Critical thinking, research skills, and collaborative project work are central. Students develop leadership skills through classroom roles and inter-campus initiatives.', subjects: ['Advanced English', 'Advanced Mathematics', 'Integrated Science', 'STEM & Robotics', 'French (Fluency)', 'African Studies', 'Leadership & Ethics', 'Digital Literacy'] },
+  { label: 'Stage 3', level: 'Upper Primary', ages: 'Ages 9–12', classes: 'Year 4 – Year 7', desc: 'Upper Primary deepens academic rigour and prepares students for secondary school with confidence. Critical thinking, research skills, and collaborative project work are central. Students develop leadership skills through classroom roles and school-wide initiatives.', subjects: ['Advanced English', 'Advanced Mathematics', 'Integrated Science', 'STEM & Robotics', 'French (Fluency)', 'African Studies', 'Leadership & Ethics', 'Digital Literacy'] },
 ];
 
 const PRINCIPLES = [
@@ -16,15 +17,11 @@ const PRINCIPLES = [
 export default function Academics() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Academics</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-3xl mx-auto sm:mx-0">
-            A curriculum built to <span className="text-accent">inspire</span>.
-          </h1>
-          <p className="mt-6 text-white/60 text-lg max-w-lg leading-relaxed mx-auto sm:mx-0">Aligned with Cambridge International standards and enriched with African context, our curriculum prepares students to think critically, communicate clearly, and lead with confidence.</p>
-        </div>
-      </section>
+      <PageHero
+        label="Academics"
+        title={<>A curriculum built to <span className="text-accent">inspire</span>.</>}
+        intro="Aligned with Cambridge International standards and enriched with African context, our curriculum prepares students to think critically, communicate clearly, and lead with confidence."
+      />
 
       <section className="section-wrapper bg-white">
         <div className="container-xl">

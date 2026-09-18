@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import PageHero from '../components/PageHero';
 
 const CAMPUS = {
   id: 1,
@@ -26,15 +27,11 @@ const CAMPUS = {
 export default function Campuses() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Our Location</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-3xl mx-auto sm:mx-0">
-            One campus,<br /><span className="text-accent">one family</span>.
-          </h1>
-          <p className="mt-6 text-white/60 text-lg max-w-lg leading-relaxed mx-auto sm:mx-0">A single, vibrant campus united by high standards, shared values, and a commitment to bilingual excellence.</p>
-        </div>
-      </section>
+      <PageHero
+        label="Our Location"
+        title={<>One campus,<br /><span className="text-accent">one family</span>.</>}
+        intro="A single, vibrant campus united by high standards, shared values, and a commitment to bilingual excellence."
+      />
 
       <section className="section-wrapper bg-white">
         <div className="container-xl">

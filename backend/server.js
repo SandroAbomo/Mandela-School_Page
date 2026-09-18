@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { connectDB } from './config/db.js';
 import enquiryRoutes from './routes/enquiryRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import schoolRoutes from './routes/schoolRoutes.js';
 
 const app = express();
 
@@ -16,8 +17,11 @@ app.use(express.json());
 
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api', schoolRoutes);
 
 app.get('/', (_req, res) => res.json({ status: 'API running' }));
+
+app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 const PORT = process.env.PORT || 5000;
 

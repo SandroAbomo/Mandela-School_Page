@@ -9,9 +9,9 @@ const SUBJECTS = [
   'General Enquiry',
 ];
 
-const INITIAL = { name: '', email: '', phone: '', subject: '', campus: '', message: '' };
+const INITIAL = { name: '', email: '', phone: '', subject: '', campus: 'Main Campus', message: '' };
 
-const inputCls = 'w-full px-4 py-3 border border-gray-200 focus:border-primary focus:outline-none text-school-black text-sm transition-colors rounded-lg bg-white';
+const inputCls = 'w-full px-4 py-3 border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 text-school-black text-sm transition rounded-lg bg-white';
 
 export default function EnquiryForm() {
   const [form, setForm] = useState(INITIAL);
@@ -30,8 +30,10 @@ export default function EnquiryForm() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
+          phone: form.phone,
+          campus: form.campus,
           subject: form.subject || 'General Enquiry',
-          message: `Campus preference: ${form.campus || 'Any'}\nPhone: ${form.phone || 'Not provided'}\n\n${form.message}`,
+          message: form.message,
         }),
       });
       if (!res.ok) throw new Error();
@@ -78,7 +80,7 @@ export default function EnquiryForm() {
         <div>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-700 mb-1.5">Campus Preference</label>
           <select name="campus" value={form.campus} onChange={handleChange} className={inputCls}>
-            <option value="">Main Campus</option>
+            <option value="Main Campus">Main Campus</option>
           </select>
         </div>
       </div>

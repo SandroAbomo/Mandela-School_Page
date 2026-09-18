@@ -15,7 +15,7 @@ export default function TestimonialsSection() {
         <div className="grid lg:grid-cols-3 gap-6">
           {TESTIMONIALS.map(({ quote, author, role, initial }) => (
             <div key={author} className="bg-white p-8 flex flex-col rounded-2xl shadow-sm">
-              <div className="text-accent text-6xl font-serif leading-none mb-4 select-none">"</div>
+              <div className="text-accent text-6xl font-serif leading-none mb-4 select-none">&ldquo;</div>
               <p className="text-slate-500 leading-relaxed flex-grow italic text-sm lg:text-base">{quote}</p>
               <div className="mt-8 flex items-center gap-4">
                 <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">

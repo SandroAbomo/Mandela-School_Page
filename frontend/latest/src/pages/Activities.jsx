@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
+import PageHero from "../components/PageHero";
 
+// The school runs a single campus, so each activity is tagged with the year
+// groups it is open to — the question a parent actually has when reading this.
 const CATEGORIES = [
   {
     name: "Sports & Athletics",
@@ -8,22 +11,22 @@ const CATEGORIES = [
     items: [
       {
         name: "Football",
-        campuses: ["Central", "North", "East"],
-        desc: "Competitive inter-campus teams from Year 2 upwards. Annual championship held each spring term.",
+        years: ["Year 2+"],
+        desc: "Competitive squads from Year 2 upwards, with fixtures against local schools and a championship each spring term.",
       },
       {
         name: "Swimming",
-        campuses: ["Central"],
-        desc: "Weekly lessons for all students at Central Campus pool, with squad training for competitive swimmers.",
+        years: ["All years"],
+        desc: "Weekly lessons for every year group at the campus pool, plus squad training for competitive swimmers.",
       },
       {
         name: "Athletics",
-        campuses: ["Central", "North", "East"],
-        desc: "Track and field across all campuses. Students compete in the annual inter-campus athletics day.",
+        years: ["All years"],
+        desc: "Track and field for all year groups, building towards the annual school athletics day.",
       },
       {
         name: "Basketball",
-        campuses: ["North", "East"],
+        years: ["Year 4+"],
         desc: "After-school club with inter-school fixtures from Year 4.",
       },
     ],
@@ -35,22 +38,22 @@ const CATEGORIES = [
     items: [
       {
         name: "School Choir",
-        campuses: ["Central", "North", "East"],
-        desc: "Three campus choirs that come together for the annual joint performance. Open to all year groups.",
+        years: ["All years"],
+        desc: "Open to every year group, rehearsing weekly and performing at Cultural Day and the annual concert.",
       },
       {
         name: "Drama Club",
-        campuses: ["Central", "East"],
+        years: ["Year 3+"],
         desc: "Term-time rehearsals culminating in a full stage production for parents and the community.",
       },
       {
         name: "Dance & Movement",
-        campuses: ["Central", "North", "East"],
+        years: ["All years"],
         desc: "African dance, contemporary, and creative movement performed at Cultural Day and assemblies.",
       },
       {
         name: "Music Tuition",
-        campuses: ["Central", "North"],
+        years: ["All years"],
         desc: "Individual tuition in piano, guitar, drums, and traditional African instruments.",
       },
     ],
@@ -62,22 +65,22 @@ const CATEGORIES = [
     items: [
       {
         name: "Coding Club",
-        campuses: ["North", "East"],
+        years: ["Year 3+"],
         desc: "Weekly sessions using Scratch, Python, and block coding. Students build apps and games each term.",
       },
       {
         name: "Robotics",
-        campuses: ["North", "East"],
+        years: ["Year 4+"],
         desc: "Design, build, and program robots. Teams compete in the national Junior Robotics Challenge.",
       },
       {
         name: "Science Explorers",
-        campuses: ["Central", "North", "East"],
+        years: ["All years"],
         desc: "Hands-on science experiments beyond the classroom curriculum.",
       },
       {
         name: "Eco & Green Club",
-        campuses: ["North"],
+        years: ["All years"],
         desc: "Environmental awareness, gardening, composting, and sustainability projects.",
       },
     ],
@@ -89,22 +92,22 @@ const CATEGORIES = [
     items: [
       {
         name: "Student Council",
-        campuses: ["Central", "North", "East"],
+        years: ["Year 3+"],
         desc: "Elected student representatives from Year 3 upwards, meeting monthly to voice ideas.",
       },
       {
         name: "Debate Club",
-        campuses: ["Central", "North"],
+        years: ["Year 5+"],
         desc: "Structured debating sessions with inter-school competitions from Year 5.",
       },
       {
         name: "Cultural Arts",
-        campuses: ["Central", "North", "East"],
+        years: ["All years"],
         desc: "African art, batik, beading, and textile arts taught by specialist cultural educators.",
       },
       {
         name: "Community Service",
-        campuses: ["Central", "North", "East"],
+        years: ["Year 2+"],
         desc: "Regular community outreach days, charity drives, and volunteering initiatives.",
       },
     ],
@@ -114,23 +117,17 @@ const CATEGORIES = [
 export default function Activities() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Extracurricular</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-3xl mx-auto sm:mx-0">
-            Activities that build <span className="text-accent">character</span>
-            .
-          </h1>
-          <p className="mt-6 text-white/70 text-lg max-w-lg leading-relaxed mx-auto sm:mx-0">
-            From football pitches to performing arts stages, from robotics labs
-            to community gardens, our activities develop confident, capable, and
-            compassionate young people.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        label="Extracurricular"
+        title={<>Activities that build <span className="text-accent">character</span>.</>}
+        intro="From football pitches to performing arts stages, from robotics labs to community gardens, our activities develop confident, capable, and compassionate young people."
+      />
 
       {CATEGORIES.map((cat) => (
-        <section key={cat.name} className="section-wrapper bg-white">
+        // Tighter rhythm than `.section-wrapper`: four consecutive white
+        // sections would otherwise stack pb-28 on pt-28 and leave a ~14rem
+        // empty band between each category.
+        <section key={cat.name} className="py-12 lg:py-16 bg-white">
           <div className="container-xl">
             <div className="flex items-center gap-4 mb-10">
               <div
@@ -150,12 +147,12 @@ export default function Activities() {
                     {item.name}
                   </h3>
                   <div className="flex flex-wrap gap-1 mt-2 mb-3">
-                    {item.campuses.map((c) => (
+                    {item.years.map((y) => (
                       <span
-                        key={c}
+                        key={y}
                         className="text-xs px-2 py-0.5 bg-primary-50 text-accent font-semibold rounded-md"
                       >
-                        {c}
+                        {y}
                       </span>
                     ))}
                   </div>

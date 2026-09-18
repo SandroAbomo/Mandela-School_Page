@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageHero from "../components/PageHero";
 
 const LEADERSHIP = [
   {
@@ -60,21 +61,11 @@ const TIMELINE = [
 export default function About() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Our Story</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-3xl mx-auto sm:mx-0">
-            Built on belief.
-            <br />
-            Driven by <span className="text-accent">purpose</span>.
-          </h1>
-          <p className="mt-6 text-white/60 text-lg max-w-xl leading-relaxed mx-auto sm:mx-0">
-            For over 15 years, Mandela Bilingual Nursery and Primary has been
-            transforming lives through bilingual education rooted in excellence,
-            identity, and community.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        label="Our Story"
+        title={<>Built on belief.<br />Driven by <span className="text-accent">purpose</span>.</>}
+        intro="For over 15 years, Mandela Bilingual Nursery and Primary has been transforming lives through bilingual education rooted in excellence, identity, and community."
+      />
 
       <section className="section-wrapper bg-white">
         <div className="container-xl">
@@ -91,7 +82,7 @@ export default function About() {
             </div>
             <div>
               <span className="section-label">Our Vision</span>
-              <h2 className="mt-3 section-heading">Where we're going.</h2>
+              <h2 className="mt-3 section-heading">Where we&rsquo;re going.</h2>
               <p className="mt-6 text-slate-500 leading-relaxed">
                 To be the leading network of primary schools across the
                 continent, a model that proves African schools can be among the

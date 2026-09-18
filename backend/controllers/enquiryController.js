@@ -3,8 +3,8 @@ import { sendReply, notifyAdmin } from '../services/emailService.js';
 
 export async function createEnquiry(req, res) {
   try {
-    const { name, email, subject, message } = req.body;
-    const enquiry = await Enquiry.create({ name, email, subject, message });
+    const { name, email, phone, campus, subject, message } = req.body;
+    const enquiry = await Enquiry.create({ name, email, phone, campus, subject, message });
     notifyAdmin(enquiry).catch(console.error);
     res.status(201).json(enquiry);
   } catch (err) {

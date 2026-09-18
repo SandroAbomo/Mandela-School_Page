@@ -10,8 +10,11 @@ export async function loginAdmin(email, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error('Invalid credentials');
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  // The server's own message is carried through so a deactivated account can be
+  // told apart from a wrong password.
+  if (!res.ok) throw new Error(data.error || 'Invalid credentials');
+  return data;
 }
 
 export async function fetchEnquiries(token, params = {}) {

@@ -1,8 +1,8 @@
 # Mandela Bilingual Nursery and Primary School — Website & Enquiry Platform
 
-A full-stack school website with a built-in enquiry pipeline: parents submit enquiries from
-the public site, staff triage and reply to them from an admin dashboard, and every reply goes
-out by email.
+A full-stack school website with a staff dashboard behind it. Parents submit enquiries from
+the public site and staff reply by email; staff also manage the student roster, and publish
+the news and events that the public site displays.
 
 ```
 Public site  ──POST /api/enquiries──►  Express API  ──►  MongoDB
@@ -35,8 +35,9 @@ School-Page/
 │   ├── middleware/        # JWT verification
 │   ├── models/            # Enquiry, User
 │   ├── routes/            # /api/auth, /api/enquiries
+│   ├── scripts/           # seedAdmin.js — creates the first dashboard login
 │   └── services/          # emailService (Nodemailer)
-├── frontend/latest/       # React + Vite app (port 5173)
+├── frontend/latest/       # React + Vite app (port 5177)
 │   ├── public/images/     # Web-optimised logo + campus photo
 │   └── src/
 │       ├── assets.js      # Single source of truth for brand imagery
@@ -58,8 +59,14 @@ npm --prefix frontend/latest install
 cp backend/.env.example backend/.env                       # fill in real values
 cp frontend/latest/.env.local.example frontend/latest/.env.local
 
-# 3. Run both apps
-npm run dev            # backend :5000 + frontend :5173
+# 3. Create the first login (reads ADMIN_SEED_* from backend/.env)
+npm run seed:admin --prefix backend
+
+# Optional: fill the dashboard with a term of invented school data
+npm run seed:demo --prefix backend
+
+# 4. Run both apps
+npm run dev            # backend :5000 + frontend :5177
 ```
 
 Requires a running MongoDB instance (local or Atlas).
@@ -68,16 +75,20 @@ Requires a running MongoDB instance (local or Atlas).
 
 `backend/.env`
 
-| Variable      | Description                              |
-|---------------|------------------------------------------|
-| `PORT`        | API port (default `5000`)                |
-| `MONGO_URI`   | MongoDB connection string                |
-| `JWT_SECRET`  | Secret used to sign admin JWTs           |
-| `EMAIL_HOST`  | SMTP host                                |
-| `EMAIL_PORT`  | SMTP port                                |
-| `EMAIL_USER`  | SMTP username / from address             |
-| `EMAIL_PASS`  | SMTP password                            |
-| `ADMIN_EMAIL` | Recipient of new-enquiry notifications   |
+| Variable              | Description                                          |
+|-----------------------|------------------------------------------------------|
+| `PORT`                | API port (default `5000`)                            |
+| `MONGO_URI`           | MongoDB connection string                            |
+| `JWT_SECRET`          | Secret used to sign admin JWTs                       |
+| `SCHOOL_NAME`         | Name used in the from-address and signature of email |
+| `EMAIL_HOST`          | SMTP host                                            |
+| `EMAIL_PORT`          | SMTP port                                            |
+| `EMAIL_USER`          | SMTP username / from address                         |
+| `EMAIL_PASS`          | SMTP password                                        |
+| `ADMIN_EMAIL`         | Recipient of new-enquiry notifications               |
+| `ADMIN_SEED_EMAIL`    | Seed script only — first admin's email               |
+| `ADMIN_SEED_PASSWORD` | Seed script only — minimum 12 characters             |
+| `ADMIN_SEED_ROLE`     | Seed script only — defaults to `admin`               |
 
 `frontend/latest/.env.local`
 
@@ -94,18 +105,44 @@ Requires a running MongoDB instance (local or Atlas).
 | GET    | `/api/enquiries/stats` | JWT  | Totals by status for the dashboard   |
 | GET    | `/api/enquiries/:id`   | JWT  | Single enquiry                       |
 | PATCH  | `/api/enquiries/:id`   | JWT  | Change status, or send an email reply|
-| POST   | `/api/auth/login`      | —    | Admin login → JWT                    |
+| POST   | `/api/auth/login`      | —    | Staff login → JWT                    |
+| GET    | `/api/content/articles`| —    | Published news for the website       |
+| GET    | `/api/content/events`  | —    | Published upcoming events            |
+| GET    | `/api/dashboard/overview` | JWT | Roll, enquiries, events, activity  |
+| GET    | `/api/students`        | JWT  | Roster (search, year group, status)  |
+| GET    | `/api/articles`        | JWT  | News incl. drafts                    |
+| GET    | `/api/events`          | JWT  | Events incl. drafts and past         |
+| —      | `/api/users`           | JWT  | Staff accounts (headteacher only)    |
 
 `/api/enquiries/stats` is registered before `/:id` so `stats` is never parsed as an ObjectId.
 
 ## Data model
 
 ```js
-Enquiry { name, email, subject, message, status: 'pending' | 'replied', createdAt }
-User    { email, password (bcrypt), role: 'admin' | 'teacher' | 'headteacher' }
+Enquiry { name, email, phone, campus, subject, message,
+          status: 'pending' | 'replied', createdAt }
+Student { firstName, lastName, yearGroup, guardianName, guardianEmail,
+          guardianPhone, status: 'applicant' | 'enrolled' | 'alumni' }
+Article { title, category, excerpt, body,
+          status: 'draft' | 'published', publishedAt }
+Event   { title, category, description, startsAt, timeLabel, location,
+          status: 'draft' | 'published' }
+User    { name, email, password (bcrypt), role, active, lastLogin }
 ```
 
-Sending a reply from the admin panel emails the parent and flips the enquiry to `replied`.
+Sending a reply from the dashboard emails the parent and flips the enquiry to `replied`.
+Publishing an article or event makes it appear on the public site immediately; drafts are
+filtered out server-side and never reach `/api/content/*`.
+
+## Roles
+
+Enforced on the server, not in the browser:
+
+| Role          | Can do                                            |
+|---------------|---------------------------------------------------|
+| `headteacher` | Everything, including staff accounts              |
+| `admin`       | Enquiries, students, news, events — not staff     |
+| `teacher`     | Read-only; never sees enquiries or staff accounts |
 
 ## Brand imagery
 
@@ -115,7 +152,9 @@ in `frontend/latest/public/images/`. Every reference goes through
 
 ## Project status
 
-Work is tracked on the **Mandela School Page** project board. The public site, enquiry
-submission, admin authentication, dashboard, and email replies are all working end to end;
-News and Gallery content is still hard-coded, and there is no admin-user seed script or
-deployment pipeline yet.
+The public site, enquiry submission, staff authentication, the dashboard (overview, students,
+news, events, staff accounts), role enforcement, and email replies all work end to end.
+News and events published in the dashboard appear on the public site.
+
+Still outstanding: Gallery images are defined in code, there are no automated tests, and
+there is no deployment pipeline.

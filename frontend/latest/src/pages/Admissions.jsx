@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import PageHero from '../components/PageHero';
 import EnquiryForm from '../components/EnquiryForm';
 
 const STEPS = [
   { step: '01', title: 'Submit an Enquiry', desc: 'Complete our online enquiry form or call the admissions office. We will send you our prospectus and invite you to an open day.' },
-  { step: '02', title: 'Attend an Open Day', desc: 'Visit your preferred campus, tour the facilities, meet the team, and get a feel for our community firsthand.' },
+  { step: '02', title: 'Attend an Open Day', desc: 'Visit our campus, tour the facilities, meet the team, and get a feel for our community firsthand.' },
   { step: '03', title: 'Complete Application', desc: "Submit the formal application form with your child's birth certificate, previous school records, and two references." },
   { step: '04', title: 'Assessment Day', desc: 'Children joining Year 2 and above attend a short, informal assessment to help us understand their learning needs.' },
   { step: '05', title: 'Offer & Acceptance', desc: 'Successful applicants receive a formal offer letter. Secure your place by returning the acceptance form with the registration fee.' },
@@ -19,17 +20,11 @@ const KEY_DATES = [
 export default function Admissions() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Admissions</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-3xl mx-auto sm:mx-0">
-            Your child's journey <span className="text-accent">starts here</span>.
-          </h1>
-          <p className="mt-6 text-white/60 text-lg max-w-lg leading-relaxed mx-auto sm:mx-0">
-            We welcome applications for all year groups from Early Years to Class 7, subject to availability. Our admissions process is straightforward, personal, and designed with families in mind.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        label="Admissions"
+        title={<>Your child&rsquo;s journey <span className="text-accent">starts here</span>.</>}
+        intro="We welcome applications for all year groups from Early Years to Class 7, subject to availability. Our admissions process is straightforward, personal, and designed with families in mind."
+      />
 
       <section className="section-wrapper bg-white">
         <div className="container-xl">

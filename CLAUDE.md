@@ -1,192 +1,201 @@
-# Nelson Mandela Primary School — Multi-Campus Website
+# Mandela Bilingual Nursery and Primary School — Website & Enquiry Platform
 
 ## Project Overview
 
-Full-stack web application consisting of three parts:
+A full-stack school website with an admissions enquiry pipeline built in:
 
-1. **Public school website** (`frontend/latest/`) — premium multi-campus school site (Next.js + Tailwind CSS)
-2. **Admin dashboard** (`admin/`) — school staff manage, respond to, and track enquiries (React + Vite)
-3. **Backend API** (`backend/`) — shared Node.js/Express server connecting both systems
+1. **Public school site** — nine pages presenting the school to prospective families
+2. **Admin dashboard** — staff triage, search, and reply to enquiries
+3. **Backend API** — Express REST API serving both
+
+The public site and the admin panel are **one React + Vite application**. Public pages
+render inside a shared `Navbar`/`Footer` layout; `/admin/*` routes sit outside that layout
+behind a `ProtectedRoute` guard.
 
 ## Architecture
 
 ```
-School Website  → POST /api/enquiries → Backend API → MongoDB
-                                                          ↓
-Admin Dashboard ← GET  /api/enquiries ← Backend API ←────┘
+Public site  ──POST /api/enquiries──►  Express API  ──►  MongoDB
+                                            │
+Admin panel  ◄──GET  /api/enquiries─────────┘
+                                            └──────────►  Nodemailer (reply + admin alert)
 ```
 
 ## Project Structure
 
 ```
 School-Page/
-├── frontend/latest/     # Public school website  (Next.js 14, port 3000)
-├── admin/               # Admin dashboard         (React + Vite, port 5174)
-├── backend/             # Express REST API         (Node.js, port 5000)
-└── CLAUDE.md
+├── backend/               # Express REST API (port 5000)
+│   ├── config/db.js       # Mongoose connection
+│   ├── controllers/       # authController, enquiryController
+│   ├── middleware/        # authMiddleware — JWT verification
+│   ├── models/            # Enquiry, User
+│   ├── routes/            # authRoutes, enquiryRoutes
+│   ├── scripts/           # seedAdmin.js — creates the first dashboard login
+│   ├── services/          # emailService — Nodemailer
+│   └── server.js
+├── frontend/latest/       # React + Vite app (port 5177)
+│   ├── public/images/     # Web-optimised logo + campus photography
+│   └── src/
+│       ├── assets.js      # Single source of truth for brand imagery
+│       ├── components/    # Navbar, Footer, EnquiryForm, sections/, admin/
+│       ├── context/       # AuthContext — JWT in localStorage
+│       ├── pages/         # Public pages + admin/ (Login, Dashboard, EnquiryDetail)
+│       └── services/      # enquiryAPI.js
+├── images/                # Full-resolution brand originals (committed on purpose)
+└── package.json           # Runs both apps together via concurrently
 ```
 
 ## Running the Project
 
 ```bash
-# Backend
-cd backend && npm install
-cp .env.example .env    # fill in .env values
-npm run dev             # http://localhost:5000
+# Install
+npm install
+npm --prefix backend install
+npm --prefix frontend/latest install
 
-# Public website (Next.js)
-cd frontend/latest && npm install
-# copy .env.local.example to .env.local and set NEXT_PUBLIC_API_URL
-npm run dev             # http://localhost:3000
+# Configure
+cp backend/.env.example backend/.env                       # fill in real values
+cp frontend/latest/.env.local.example frontend/latest/.env.local
 
-# Admin dashboard
-cd admin && npm install
-npm run dev             # http://localhost:5174
+# Create the first admin login (reads ADMIN_SEED_* from backend/.env)
+npm run seed:admin --prefix backend
+
+# Optional: fill the dashboard with a term's worth of invented school data
+npm run seed:demo --prefix backend
+
+# Run both apps
+npm run dev            # backend :5000 + frontend :5177
 ```
+
+Requires a running MongoDB instance (local or Atlas).
 
 ## Environment Variables
 
 ### `backend/.env`
-| Variable     | Description                                  |
-|--------------|----------------------------------------------|
-| `PORT`       | Server port (default 5000)                   |
-| `MONGO_URI`  | MongoDB connection string                    |
-| `JWT_SECRET` | Secret for signing JWT tokens                |
-| `EMAIL_HOST` | SMTP host                                    |
-| `EMAIL_PORT` | SMTP port                                    |
-| `EMAIL_USER` | SMTP username / from address                 |
-| `EMAIL_PASS` | SMTP password                                |
-| `ADMIN_EMAIL`| Recipient for new-enquiry notifications      |
+| Variable               | Description                                        |
+|------------------------|----------------------------------------------------|
+| `PORT`                 | API port (default 5000)                            |
+| `MONGO_URI`            | MongoDB connection string                          |
+| `JWT_SECRET`           | Secret used to sign admin JWTs                     |
+| `SCHOOL_NAME`          | Name used in outgoing email from-address/signature |
+| `EMAIL_HOST`           | SMTP host                                          |
+| `EMAIL_PORT`           | SMTP port                                          |
+| `EMAIL_USER`           | SMTP username / from address                       |
+| `EMAIL_PASS`           | SMTP password                                      |
+| `ADMIN_EMAIL`          | Recipient for new-enquiry notifications            |
+| `ADMIN_SEED_EMAIL`     | Seed script only — first admin's email             |
+| `ADMIN_SEED_PASSWORD`  | Seed script only — min 12 characters               |
+| `ADMIN_SEED_ROLE`      | Seed script only — defaults to `admin`             |
 
 ### `frontend/latest/.env.local`
-| Variable              | Description                                    |
-|-----------------------|------------------------------------------------|
-| `NEXT_PUBLIC_API_URL` | Backend API base URL e.g. `http://localhost:5000/api` |
+| Variable       | Description                                    |
+|----------------|------------------------------------------------|
+| `VITE_API_URL` | API base URL, e.g. `http://localhost:5000/api` |
 
 ## Tech Stack
 
 | Layer            | Technology                              |
 |------------------|-----------------------------------------|
-| Public frontend  | Next.js 14 (App Router), Tailwind CSS 3 |
-| Admin frontend   | React 18, React Router v6, Vite         |
-| Backend          | Node.js, Express 4                      |
-| Database         | MongoDB + Mongoose                      |
-| Auth             | JWT + bcryptjs                          |
+| Frontend         | React 18, Vite 5, React Router 6, Tailwind CSS 3 |
+| Backend          | Node.js, Express 5                      |
+| Database         | MongoDB + Mongoose 8                    |
+| Auth             | JWT (`jsonwebtoken`) + bcryptjs         |
 | Email            | Nodemailer                              |
+| Hardening        | helmet, cors, morgan                    |
 
-## Design System (Public Frontend)
+## Design System
 
-### Colours
-| Token             | Hex        | Usage                              |
-|-------------------|------------|------------------------------------|
-| `primary`         | `#C41E3A`  | Brand red — CTA buttons, accents   |
-| `primary-dark`    | `#991B1B`  | Hover states on red elements       |
-| `primary-50`      | `#FFF1F2`  | Light red for active nav states    |
-| `school-black`    | `#0D0D0D`  | Main text, hero backgrounds        |
-| `school-off-white`| `#F8F7F4`  | Alternate section backgrounds      |
-| `school-warm`     | `#EAE8E1`  | Dividers, subtle tones             |
+### Colours (`tailwind.config.js`)
+| Token              | Hex         | Usage                                |
+|--------------------|-------------|--------------------------------------|
+| `primary`          | `#0F2D5C`   | Brand navy — nav bar, CTA buttons    |
+| `primary-dark`     | `#0A1F42`   | Hover state on primary buttons       |
+| `primary-50`       | `#EBF1F4`   | Light tint for badges/active states  |
+| `accent`           | `#f57542`   | Orange highlight — labels, emphasis  |
+| `school-black`     | `#040f2b`   | Dark sections, hero, footer, admin   |
+| `school-off-white` | warm tint   | Alternate section backgrounds        |
+| `school-warm`      | `#c0d8f7`   | Subtle tones                         |
 
 ### Typography & Layout
-- Font: Inter via `next/font/google`
-- Headings: Bold, tight tracking, large scale
+- Font: Inter, loaded from Google Fonts in `index.html`
+- Every inner page opens with the shared `components/PageHero.jsx` — crest watermark,
+  gradient wash and "Learn · Grow · Belong" motto defined once, not copied eight times
+- Component classes in `src/index.css`: `.section-label`, `.section-heading`,
+  `.container-xl`, `.section-wrapper`, `.btn-primary`, `.btn-outline-white`, `.link-arrow`
+- Section rhythm: `py-20 lg:py-28` via `.section-wrapper`
 - Max width: `max-w-7xl` with responsive horizontal padding
-- Section rhythm: `py-20 lg:py-28`
-- No border radius on buttons/cards — sharp corners for premium minimal feel
-- Card hover: `hover:-translate-y-1 transition-all duration-300`
-
-## Public Frontend Structure (`frontend/latest/`)
-
-```
-frontend/latest/
-├── app/
-│   ├── globals.css           # Tailwind directives + base layer
-│   ├── layout.js             # Root layout (Navbar + Footer)
-│   ├── page.js               # Home page
-│   ├── about/page.js
-│   ├── admissions/page.js
-│   ├── academics/page.js
-│   ├── campuses/page.js
-│   ├── activities/page.js
-│   ├── news/page.js
-│   ├── gallery/page.js
-│   └── contact/page.js
-├── components/
-│   ├── layout/
-│   │   ├── Navbar.jsx        # Sticky responsive nav ('use client')
-│   │   └── Footer.jsx        # Multi-column footer
-│   ├── sections/             # Homepage section Server Components
-│   │   ├── Hero.jsx
-│   │   ├── AboutSection.jsx
-│   │   ├── CampusesSection.jsx
-│   │   ├── AcademicsSection.jsx
-│   │   ├── ActivitiesSection.jsx
-│   │   ├── TestimonialsSection.jsx
-│   │   ├── NewsSection.jsx
-│   │   ├── FAQSection.jsx    # 'use client' — accordion state
-│   │   └── CTASection.jsx
-│   └── forms/
-│       └── EnquiryForm.jsx   # 'use client' — controlled form + fetch
-├── services/
-│   └── api.js
-├── package.json
-├── next.config.mjs
-├── tailwind.config.js
-├── postcss.config.js
-├── jsconfig.json             # Path alias @/ → ./
-└── .env.local
-```
+- Rounded corners (`rounded-lg` / `rounded-xl`) with soft shadows
+- Card hover: subtle lift and image scale transitions
 
 ## Public Pages
 
 | Route         | Description                                                   |
 |---------------|---------------------------------------------------------------|
-| `/`           | Hero, About, Campuses, Academics, Testimonials, News, FAQ, CTA |
-| `/about`      | Mission, values, history, leadership team                     |
-| `/admissions` | How to apply, key dates, requirements, enquiry form           |
-| `/academics`  | Curriculum stages, Cambridge alignment                        |
-| `/campuses`   | Three campus cards with details                               |
-| `/activities` | Sports, arts, STEM, leadership programmes                     |
+| `/`           | Hero, About, Campus, Academics, Activities, Testimonials, News, FAQ, CTA |
+| `/about`      | Mission, values, history timeline, leadership team            |
+| `/academics`  | Teaching principles and three curriculum stages (ages 3–12)   |
+| `/campuses`   | Main Campus detail, statistics, facilities                    |
+| `/admissions` | Five-step process, key dates, requirements, enquiry form      |
+| `/activities` | Sports, performing arts, STEM, culture & leadership           |
 | `/news`       | Articles and upcoming events                                  |
-| `/gallery`    | Photo grid by category / campus                               |
-| `/contact`    | Enquiry form + campus addresses                               |
+| `/gallery`    | Photo grid                                                    |
+| `/contact`    | Enquiry form + campus contact details                         |
 
-## Admin Frontend Structure (`admin/`)
+## Admin Routes
 
-```
-admin/src/
-├── pages/           (Login, Dashboard, EnquiryDetail)
-├── components/      (StatsCards, Table, StatusBadge)
-├── context/         (AuthContext — JWT in localStorage)
-└── services/        (enquiryAPI.js)
-```
+| Route                   | Description                                 |
+|-------------------------|---------------------------------------------|
+| `/admin/login`          | Email + password, returns JWT               |
+| `/admin/overview`       | School overview: roll, enquiries, events    |
+| `/admin/enquiries`      | Admissions inbox (office roles only)        |
+| `/admin/enquiries/:id`  | Full enquiry + reply composer               |
+| `/admin/students`       | Student roster: search, filter, CRUD        |
+| `/admin/news`           | Write, publish and unpublish articles       |
+| `/admin/events`         | School calendar shown on the website        |
+| `/admin/staff`          | Staff accounts and roles (headteacher only) |
 
-## Backend Structure (`backend/`)
+## Roles
 
-```
-backend/
-├── config/db.js
-├── controllers/     (authController, enquiryController)
-├── middleware/      (authMiddleware — JWT verification)
-├── models/          (Enquiry, User)
-├── routes/          (authRoutes, enquiryRoutes)
-├── services/        (emailService — Nodemailer)
-└── server.js
-```
+Enforced server-side in `middleware/authMiddleware.js`; the dashboard only hides
+navigation to match.
+
+| Role          | Can do                                              |
+|---------------|-----------------------------------------------------|
+| `headteacher` | Everything, including staff accounts                |
+| `admin`       | Enquiries, students, news, events — not staff       |
+| `teacher`     | Read-only; never sees enquiries or staff accounts   |
 
 ## API Endpoints
 
 ### Public
-| Method | Path             | Description           |
-|--------|------------------|-----------------------|
-| POST   | `/api/enquiries` | Submit new enquiry    |
+| Method | Path             | Description        |
+|--------|------------------|--------------------|
+| POST   | `/api/enquiries` | Submit new enquiry |
 
-### Admin (JWT required)
-| Method | Path                   | Description                         |
-|--------|------------------------|-------------------------------------|
-| GET    | `/api/enquiries`       | List enquiries (filter/search/page) |
-| GET    | `/api/enquiries/stats` | Dashboard statistics                |
-| GET    | `/api/enquiries/:id`   | Single enquiry detail               |
-| PATCH  | `/api/enquiries/:id`   | Update status or send reply         |
+### Public website content
+| Method | Path                     | Description                        |
+|--------|--------------------------|------------------------------------|
+| GET    | `/api/content/articles`  | Published news (drafts never served)|
+| GET    | `/api/content/events`    | Published, future-dated events      |
+
+### Staff (JWT required)
+| Method | Path                        | Role          |
+|--------|-----------------------------|---------------|
+| GET    | `/api/dashboard/overview`   | any           |
+| GET    | `/api/enquiries`            | office        |
+| GET    | `/api/enquiries/stats`      | office        |
+| GET    | `/api/enquiries/:id`        | office        |
+| PATCH  | `/api/enquiries/:id`        | office        |
+| GET    | `/api/students`             | any           |
+| POST/PATCH/DELETE | `/api/students`  | office        |
+| GET    | `/api/articles`             | any           |
+| POST/PATCH/DELETE | `/api/articles`  | office        |
+| GET    | `/api/events`               | any           |
+| POST/PATCH/DELETE | `/api/events`    | office        |
+| GET/POST/PATCH/DELETE | `/api/users` | headteacher   |
+
+"office" means `admin` or `headteacher`.
 
 ### Auth
 | Method | Path              | Description               |
@@ -197,36 +206,75 @@ backend/
 
 **Enquiry**
 ```js
-{ name, email, subject, message, status: "pending"|"replied", createdAt }
+{ name, email, phone, campus, subject, message,
+  status: "pending" | "replied", createdAt, updatedAt }
 ```
 
-**User** (admin only)
+**Student**
 ```js
-{ email, password (bcrypt), role: "admin"|"teacher"|"headteacher" }
+{ firstName, lastName, yearGroup: "Nursery".."Year 7",
+  guardianName, guardianEmail, guardianPhone,
+  status: "applicant" | "enrolled" | "alumni", enrolledOn, notes }
+```
+
+**Article** (news)
+```js
+{ title, category, excerpt, body,
+  status: "draft" | "published", publishedAt, authorName }
+```
+
+**Event**
+```js
+{ title, category, description, startsAt, timeLabel, location,
+  status: "draft" | "published" }
+```
+
+**User** (staff)
+```js
+{ name, email, password (bcrypt, cost 12), role, active, lastLogin }
 ```
 
 ## Key Design Decisions
 
-- Next.js App Router: Server Components by default; `'use client'` only for Navbar (mobile menu state), FAQSection (accordion), and EnquiryForm (controlled form + fetch)
-- JWT stored in `localStorage` on the admin client; sent as `Authorization: Bearer <token>`
-- Status defaults to `"pending"`; switches to `"replied"` when admin sends a reply via Nodemailer
-- Public site and admin are separate apps to keep the auth surface minimal
-- `/api/enquiries/stats` registered **before** `/:id` to prevent "stats" matching as a Mongo ObjectId
+- **One app, two audiences.** Public site and admin share a build; `/admin/*` renders
+  outside the public layout behind `ProtectedRoute`.
+- **Client guard is cosmetic; the server decides.** `ProtectedRoute` controls rendering
+  only — every admin endpoint independently verifies the JWT via `requireAuth`.
+- **Admin notification never blocks a parent.** `notifyAdmin` is dispatched without being
+  awaited, so a slow or failing SMTP host cannot delay or fail an enquiry submission.
+- **Status follows the send.** A reply is emailed *first*; only then does the enquiry flip
+  to `replied`. If delivery throws, the record stays pending rather than lying.
+- **Hashing is bound to the model.** `userSchema.pre('save')` hashes on any password
+  change, so no code path can persist a plaintext password by omission.
+- **`/api/enquiries/stats` is registered before `/:id`** so `stats` is never parsed as a
+  Mongo ObjectId.
+- **Pagination and counts happen in the database** — list and total run concurrently;
+  stats are three parallel `countDocuments` calls.
+- **Brand assets are committed.** Originals live in `/images` (they were previously lost
+  to an expired Cloudinary account); every reference resolves through `src/assets.js`.
+- **Vite runs on port 5177 with `strictPort`.** Another project on this machine holds
+  5173; without a pinned port the two dev servers silently shared `localhost` via
+  IPv4/IPv6 binding. See the comment in `vite.config.js`.
+- **Email branding is environment-driven** via `SCHOOL_NAME`, so the name in parents'
+  inboxes can never drift from the name on the website.
+- **The dashboard is the system of record.** News and Events are edited by staff and
+  read by the public site through `/api/content/*`; drafts are filtered out in the
+  controller, so an unfinished article cannot reach parents even via a direct API call.
+- **Roles are enforced on the server, not in the browser.** `requireRole` guards every
+  write and every admissions route; the sidebar only hides doors that are already locked.
+- **Data loading goes through `useAsyncData`**, which never calls setState synchronously
+  inside an effect and discards results that arrive after the inputs changed.
 
-## Campuses
+## Campus
 
-| Campus         | Location         | Students | Founded |
-|----------------|------------------|----------|---------|
-| Central Campus | Central District | ~450     | 2010    |
-| North Campus   | North Quarter    | ~380     | 2015    |
-| East Campus    | East Borough     | ~370     | 2019    |
+Single site: **Main Campus**, 15 Mandela Drive, Central District — Nursery through
+Class 7, ~750 students, founded 2010, bilingual (English/French).
 
-## Future Improvements
+## Known Gaps / Future Improvements
 
-- Live chat between admin and parents
+- Gallery images are still defined in code (News and Events are dashboard-managed)
+- No automated tests
+- No deployment pipeline; not yet deployed
 - File uploads for admissions documents
-- SMS notifications
-- Role-based access (teacher / admin / headteacher)
-- Analytics dashboard (enquiry trends over time)
-- CMS for News and Gallery content management
-- Interactive campus map
+- Enquiry trend analytics
+- Live chat / SMS notifications

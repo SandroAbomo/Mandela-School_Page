@@ -6,8 +6,9 @@ previously hosted on Cloudinary).
 
 | File                          | Source                 | Size        | Used for                          |
 |-------------------------------|------------------------|-------------|-----------------------------------|
-| `mandela-logo.png`            | 1024×1024 PNG (alpha)  | School crest| Navbar, Footer, admin login, icons|
+| `mandela-logo.png`            | 1254×1254 PNG (alpha)  | School crest| Navbar, Footer, admin login, icons|
 | `mandela-school-building.png` | 1672×941 PNG           | Campus photo| Home page hero background, og:image|
+| `mandela-campus-aerial.png`   | 1547×1017 PNG          | Site plan   | Campus card on the home page       |
 
 ## Web copies
 
@@ -18,6 +19,7 @@ These originals are not served directly. Optimised derivatives live in
 |--------------------------------------|-------------------------------|--------------------|
 | `/images/mandela-logo.png`           | `mandela-logo.png`            | 256×256 PNG, ~106 KB |
 | `/images/mandela-school-building.jpg`| `mandela-school-building.png` | 1672×941 JPEG q82, ~407 KB |
+| `/images/mandela-campus-aerial.jpg`  | `mandela-campus-aerial.png`   | 1547×1017 JPEG q82, ~374 KB |
 | `/favicon.png`                       | `mandela-logo.png`            | 64×64              |
 | `/apple-touch-icon.png`              | `mandela-logo.png`            | 180×180            |
 

@@ -1,5 +1,7 @@
+import PageHero from "../components/PageHero";
+
 const PHOTOS = [
-  { id: 1, caption: 'Central Campus main courtyard', size: 'large', bg: 'bg-gray-200' },
+  { id: 1, caption: 'Main campus courtyard at break time', size: 'large', bg: 'bg-gray-200' },
   { id: 2, caption: 'Annual Cultural Day celebrations', size: 'small', bg: 'bg-school-warm' },
   { id: 3, caption: 'Year 6 science fair project', size: 'small', bg: 'bg-primary-50' },
   { id: 4, caption: 'School football championship', size: 'small', bg: 'bg-gray-100' },
@@ -16,15 +18,11 @@ const PHOTOS = [
 export default function Gallery() {
   return (
     <>
-      <section className="bg-school-black pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="container-xl text-center sm:text-left">
-          <span className="section-label">Gallery</span>
-          <h1 className="mt-3 text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[0.92] max-w-2xl mx-auto sm:mx-0">
-            Life at <span className="text-accent">Mandela Bilingual</span>.
-          </h1>
-          <p className="mt-6 text-white/70 text-lg max-w-lg leading-relaxed mx-auto sm:mx-0">A glimpse into the vibrant, busy, and joyful life that happens every day at our campus.</p>
-        </div>
-      </section>
+      <PageHero
+        label="Gallery"
+        title={<>Life at <span className="text-accent">Mandela Bilingual</span>.</>}
+        intro="A glimpse into the vibrant, busy, and joyful life that happens every day at our campus."
+      />
 
       <section className="section-wrapper bg-white">
         <div className="container-xl">

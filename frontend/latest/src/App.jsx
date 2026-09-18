@@ -5,7 +5,7 @@ import {
   Outlet,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -22,8 +22,13 @@ import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 
 import AdminLogin from "./pages/admin/Login";
-import AdminDashboard from "./pages/admin/Dashboard";
+import Overview from "./pages/admin/Overview";
+import Enquiries from "./pages/admin/Enquiries";
 import EnquiryDetail from "./pages/admin/EnquiryDetail";
+import Students from "./pages/admin/Students";
+import NewsAdmin from "./pages/admin/NewsAdmin";
+import EventsAdmin from "./pages/admin/EventsAdmin";
+import Staff from "./pages/admin/Staff";
 
 function PublicLayout() {
   return (
@@ -53,26 +58,20 @@ export default function App() {
             <Route path="contact" element={<Contact />} />
           </Route>
 
-          {/* Admin — no public layout */}
+          {/* Staff dashboard — its own layout, every route behind the guard */}
           <Route path="admin">
-            <Route index element={<Navigate to="login" replace />} />
+            <Route index element={<Navigate to="overview" replace />} />
             <Route path="login" element={<AdminLogin />} />
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="enquiries/:id"
-              element={
-                <ProtectedRoute>
-                  <EnquiryDetail />
-                </ProtectedRoute>
-              }
-            />
+            {/* Kept so old links and bookmarks still land somewhere useful */}
+            <Route path="dashboard" element={<Navigate to="/admin/overview" replace />} />
+
+            <Route path="overview" element={<ProtectedRoute><Overview /></ProtectedRoute>} />
+            <Route path="enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />
+            <Route path="enquiries/:id" element={<ProtectedRoute><EnquiryDetail /></ProtectedRoute>} />
+            <Route path="students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
+            <Route path="news" element={<ProtectedRoute><NewsAdmin /></ProtectedRoute>} />
+            <Route path="events" element={<ProtectedRoute><EventsAdmin /></ProtectedRoute>} />
+            <Route path="staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -1,18 +1,33 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const NEWS = [
-  { date: 'May 2026', category: 'Achievement', title: 'Students Win National Science Fair for Third Consecutive Year', excerpt: 'Our Year 6 team took top honours at the National Junior Science Fair, beating over 200 schools nationwide with their water purification project.' },
-  { date: 'April 2026', category: 'Event', title: 'Annual Cultural Day Celebrates Bilingual Heritage', excerpt: 'Over 750 students, parents, and staff came together to celebrate the school\'s rich bilingual culture through music, dance, food, and art.' },
-  { date: 'March 2026', category: 'School', title: 'New Innovation and Robotics Lab Opens Its Doors', excerpt: 'A state-of-the-art STEM facility gives students access to cutting-edge tools for coding, robotics, and digital making.' },
-];
+import { fetchPublicArticles } from '../../services/schoolAPI';
 
 const CAT_COLOURS = {
   Achievement: 'bg-emerald-50 text-emerald-700',
   Event: 'bg-primary-50 text-accent',
   School: 'bg-amber-50 text-amber-600',
+  Community: 'bg-yellow-50 text-yellow-700',
 };
 
+const monthYear = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' });
+
 export default function NewsSection() {
+  const [news, setNews] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPublicArticles(3)
+      .then((d) => !cancelled && setNews(d.articles))
+      .catch(() => {})
+      .finally(() => !cancelled && setLoaded(true));
+    return () => { cancelled = true; };
+  }, []);
+
+  // The homepage should not show an empty band while the school has nothing
+  // published, so the whole section stands down until there is something to say.
+  if (loaded && news.length === 0) return null;
+
   return (
     <section className="section-wrapper bg-white">
       <div className="container-xl">
@@ -27,20 +42,28 @@ export default function NewsSection() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {NEWS.map((item) => (
-            <article key={item.title} className="group cursor-pointer">
-              <div className="bg-school-off-white h-48 flex items-end p-5 rounded-xl">
-                <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-md ${CAT_COLOURS[item.category] || 'bg-gray-100 text-slate-500'}`}>
-                  {item.category}
-                </span>
-              </div>
-              <div className="pt-5">
-                <p className="text-xs text-slate-700 mb-2">{item.date}</p>
-                <h3 className="font-bold text-school-black text-lg leading-snug group-hover:text-accent transition-colors">{item.title}</h3>
-                <p className="mt-2 text-slate-500 text-sm leading-relaxed">{item.excerpt}</p>
-                <span className="mt-4 inline-flex items-center text-accent text-sm font-semibold gap-1">Read more →</span>
-              </div>
-            </article>
+          {news.map((item) => (
+            <Link to="/news" key={item._id} className="group">
+              <article>
+                <div className="bg-school-off-white h-48 flex items-end p-5 rounded-xl">
+                  <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-md ${CAT_COLOURS[item.category] || 'bg-gray-100 text-slate-500'}`}>
+                    {item.category}
+                  </span>
+                </div>
+                <div className="pt-5">
+                  <p className="text-xs text-slate-600 mb-2">
+                    {item.publishedAt ? monthYear.format(new Date(item.publishedAt)) : ''}
+                  </p>
+                  <h3 className="font-bold text-school-black text-lg leading-snug group-hover:text-accent transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-slate-500 text-sm leading-relaxed">{item.excerpt}</p>
+                  <span className="mt-4 inline-flex items-center text-accent text-sm font-semibold gap-1">
+                    Read more →
+                  </span>
+                </div>
+              </article>
+            </Link>
           ))}
         </div>
       </div>
