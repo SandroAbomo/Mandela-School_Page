@@ -8,6 +8,23 @@ import enquiryRoutes from './routes/enquiryRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import schoolRoutes from './routes/schoolRoutes.js';
 
+/**
+ * Refuse to start without a real signing secret.
+ *
+ * With JWT_SECRET unset every login fails; with the placeholder from
+ * .env.example left in place, anyone who has read that file can mint a staff
+ * token. Both are deployment mistakes, so they stop the server here rather
+ * than surfacing later as a broken or forgeable login.
+ */
+const jwtSecret = process.env.JWT_SECRET ?? '';
+if (jwtSecret.length < 32 || jwtSecret.startsWith('change-me')) {
+  console.error(
+    'JWT_SECRET must be set to a random string of at least 32 characters. Generate one with:\n'
+    + '  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"'
+  );
+  process.exit(1);
+}
+
 const app = express();
 
 /**
@@ -49,7 +66,9 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(morgan('dev'));
+// 'combined' records the caller's address and user agent, which the coloured
+// 'dev' format drops — worth having in a host's log viewer.
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
 
 app.use('/api/enquiries', enquiryRoutes);

@@ -83,8 +83,9 @@ Requires a running MongoDB instance (local or Atlas).
 | `SCHOOL_NAME`          | Name used in outgoing email from-address/signature |
 | `EMAIL_HOST`           | SMTP host                                          |
 | `EMAIL_PORT`           | SMTP port                                          |
-| `EMAIL_USER`           | SMTP username / from address                       |
+| `EMAIL_USER`           | SMTP username                                      |
 | `EMAIL_PASS`           | SMTP password                                      |
+| `EMAIL_FROM`           | Sender address; defaults to `EMAIL_USER`           |
 | `ADMIN_EMAIL`          | Recipient for new-enquiry notifications            |
 | `ADMIN_SEED_EMAIL`     | Seed script only — first admin's email             |
 | `ADMIN_SEED_PASSWORD`  | Seed script only — min 12 characters               |
@@ -285,7 +286,7 @@ Class 7, ~750 students, founded 2010, bilingual (English/French).
 
 - Gallery images are still defined in code (News and Events are dashboard-managed)
 - No automated tests
-- No deployment pipeline; not yet deployed
+- Not yet deployed; Vercel (frontend) + Render (API) setup is in `DEPLOYMENT.md`
 - File uploads for admissions documents
 - Enquiry trend analytics
 - Live chat / SMS notifications

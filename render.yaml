@@ -1,0 +1,40 @@
+# Render Blueprint for the API. The frontend is deployed separately on Vercel
+# (see DEPLOYMENT.md). Values marked `sync: false` are entered in the Render
+# dashboard when the Blueprint is first applied and are never committed.
+services:
+  - type: web
+    name: mandela-school-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render's proxy sits in front of the app; without this the rate
+      # limiters would count every visitor as the same address.
+      - key: TRUST_PROXY
+        value: "1"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SCHOOL_NAME
+        value: Mandela Bilingual Nursery and Primary School
+      - key: MONGO_URI
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      # Brevo on 2525: the free plan drops outbound SMTP on 25, 465 and 587.
+      - key: EMAIL_HOST
+        value: smtp-relay.brevo.com
+      - key: EMAIL_PORT
+        value: "2525"
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false

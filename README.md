@@ -159,4 +159,4 @@ news, events, staff accounts), role enforcement, and email replies all work end 
 News and events published in the dashboard appear on the public site.
 
 Still outstanding: Gallery images are defined in code, there are no automated tests, and
-there is no deployment pipeline.
+the site is not yet deployed (Vercel + Render setup is in [DEPLOYMENT.md](DEPLOYMENT.md)).
