@@ -159,4 +159,4 @@ news, events, staff accounts), role enforcement, and email replies all work end 
 News and events published in the dashboard appear on the public site.
 
 Still outstanding: Gallery images are defined in code, there are no automated tests, and
-the site is not yet deployed (Vercel + Render setup is in [DEPLOYMENT.md](DEPLOYMENT.md)).
+the site is deployed as a portfolio prototype with simulated data at https://mandela-school.vercel.app (see [DEPLOYMENT.md](DEPLOYMENT.md)).

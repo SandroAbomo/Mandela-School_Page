@@ -286,7 +286,7 @@ Class 7, ~750 students, founded 2010, bilingual (English/French).
 
 - Gallery images are still defined in code (News and Events are dashboard-managed)
 - No automated tests
-- Not yet deployed; Vercel (frontend) + Render (API) setup is in `DEPLOYMENT.md`
+- Deployed as a portfolio prototype (Vercel + Render Free + Atlas Free + Brevo Free) with simulated data only; see `DEPLOYMENT.md`. Render Free sleeps when idle, so the first API call after ~15 min takes ~20–30 s
 - File uploads for admissions documents
 - Enquiry trend analytics
 - Live chat / SMS notifications
