@@ -13,10 +13,12 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # Render's proxy sits in front of the app; without this the rate
-      # limiters would count every visitor as the same address.
+      # Requests reach the app through Cloudflare and two Render hops. Measured
+      # on the live service: 1 and 2 log internal/Cloudflare addresses, 3 logs
+      # the visitor's own IP and ignores a client-supplied X-Forwarded-For.
+      # Without the right value the rate limiters count proxies, not visitors.
       - key: TRUST_PROXY
-        value: "1"
+        value: "3"
       - key: JWT_SECRET
         generateValue: true
       - key: SCHOOL_NAME

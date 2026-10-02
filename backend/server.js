@@ -53,7 +53,8 @@ if (!process.env.CORS_ORIGIN) {
 /**
  * Behind a reverse proxy every request arrives from the proxy, so the rate
  * limiters would put the whole internet in one bucket. Set TRUST_PROXY to the
- * number of proxies in front of this app (usually 1) when you deploy.
+ * number of proxies in front of this app when you deploy (3 on Render; see
+ * render.yaml for how that was measured).
  */
 const trustProxy = Number.parseInt(process.env.TRUST_PROXY ?? '', 10);
 if (Number.isInteger(trustProxy)) app.set('trust proxy', trustProxy);
